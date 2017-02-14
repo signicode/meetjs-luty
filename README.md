@@ -1,0 +1,7 @@
+
+
+
+License
+--------
+
+See LICENSE (GNU AFFERO GENERAL PUBLIC LICENSE).
