@@ -9,7 +9,10 @@
   "author": "",
   "license": "AGPL-3.0",
   "dependencies": {
-    "scramjet": "^2.3.0",
-    "twit": "^2.2.5"
+    "opn": "^4.0.2",
+    "scramjet": "^2.4.0",
+    "socket.io": "^1.7.2",
+    "twit": "^2.2.5",
+    "yargs": "^6.6.0"
   }
 }

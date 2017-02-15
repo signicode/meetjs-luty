@@ -1,0 +1,131 @@
+<html lang="en">
+<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+<style type="text/css">
+    body {
+        postion: relative;
+        font-family: "Lato", sans-serif;
+    }
+
+    body>div {
+        position: absolute;
+        bottom: 0;
+        top: 0;
+        left: 0;
+        right: 0;
+    }
+
+    item {
+        position: absolute;
+        display: inline-block;
+        width: 20%;
+        bottom: 0;
+        right: 0;
+        text-align: center;
+    }
+
+    item:first-child {
+        left: 0;
+        right: auto;
+    }
+
+    label {
+        display: block;
+        font-size: 2vw;
+    }
+
+    count {
+        display: block;
+        margin-top: .5vw;
+        font-size: 8vh;
+        padding-bottom: 15vh;
+    }
+
+    dial {
+        position: absolute;
+        display: inline-block;
+        bottom: 0;
+        top: 0;
+        left: 25%;
+        right: 25%;
+    }
+
+    dial svg {
+        position: absolute;
+        top: 50%;
+        margin-top: -50%;
+    }
+
+    dial div {
+        position: absolute;
+        z-index: 10;
+        top: 30%;
+        width: 100%;
+        font-size: 4vh;
+        text-align: center;
+    }
+</style>
+
+<body>
+    <div>
+        <item>
+            <label></label>
+            <count></count>
+        </item>
+        <dial>
+            <div>
+                tweets processed: <total>0</total>
+            </div>
+            <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" version="1.1" id="svg8">
+                <g id="needle" transform="rotate(-135,64,64)">
+                  <circle r="60" cy="64" cx="64" id="path4572" style="opacity:0;fill:#ffffff;" />
+                  <circle r="6" cy="64" cx="64" id="path4570" style="fill:#000000;" />
+                  <path sodipodi:nodetypes="cccc" inkscape:connector-curvature="0" id="rect4583" d="m 64,29 3,47 h -6 z" style="fill:#000000;" />
+                </g>
+                <path d="m 93.293386,87.88776 c 5.77565,-6.88231 8.945094,-15.59508 8.945094,-24.57942 0,-21.11599 -17.123274,-38.23866 -38.238668,-38.23866 -21.115983,0 -38.238662,17.12326 -38.238662,38.23866 0,8.98434 3.169435,17.69711 8.945084,24.57942 l 1.793474,2.13746 -7.54294,6.33031 2.109886,2.51361 7.54294,-6.33031 -2.109886,-2.51361 -4.274913,3.58683 -1.793445,-2.13746 C 24.824548,84.79301 21.360812,76.60626 20.433331,68.00006 l -4.287312,0.3 -0.229095,-3.27453 4.287311,-0.3 c -0.01505,-0.47135 -0.02273,-0.94401 -0.02273,-1.41731 0,-11.23338 4.231521,-21.47818 11.18497,-29.23307 l -3.095932,-2.98966 2.279915,-2.3613 3.096522,2.99026 C 41.155089,24.50005 51.226315,19.93349 62.359333,19.52318 V 15.222 h 3.282196 v 4.30118 c 11.133017,0.41028 21.204537,4.97658 28.712347,12.19127 l 3.09653,-2.99026 2.27991,2.36065 -3.09593,2.99026 c 6.953164,7.75488 11.184974,17.99968 11.184974,29.23306 0,0.4733 -0.009,0.94596 -0.0236,1.41732 l 4.28731,0.29935 L 111.854,68.29935 107.56669,68 c -0.9276,8.6062 -4.39122,16.79295 -9.998024,23.47453 l -1.79345,2.13746 3.26862,2.74206 -2.10923,2.51491 -7.54354,-6.32883 2.10924,-2.51491 1.79345,-2.13746 z" style="fill:#000000;" id="path3388" />
+                <path d="M 64.000001,0 C 28.655676,0 0,28.65567 0,64 0,99.34433 28.655676,128 64.000001,128 99.344326,128 128,99.34433 128,64 128,28.65567 99.344326,0 64.000001,0 Z m 0,9.83188 c 29.906737,0 54.168109,24.26138 54.168109,54.16812 0,29.90674 -24.261372,54.16812 -54.168109,54.16812 C 34.093264,118.16812 9.8318843,93.90674 9.8318843,64 9.8318843,34.09326 34.093264,9.83188 64.000001,9.83188 Z" style="fill:#000000;" id="path3384" />
+            </svg>
+        </dial>
+        <item>
+            <label></label>
+            <count></count>
+        </item>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var labels = document.querySelectorAll('item > label'),
+        counts = document.querySelectorAll('item > count'),
+        total = document.querySelector('total'),
+        needle = document.querySelector('#needle')
+    ;
+
+    var escapeHTML = function(unsafe) {
+      return unsafe.replace(/[&<"']/g, function(m) {
+        switch (m) {
+          case '&':
+            return '&amp;';
+          case '<':
+            return '&lt;';
+          case '"':
+            return '&quot;';
+          default:
+            return '&#039;';
+        }
+      });
+    };
+
+    const write = (off, data) => {
+        labels[off].innerHTML = escapeHTML(data.name);
+        counts[off].innerHTML = +data.value;
+    }
+
+    var update = (data) => {
+        const level = 2 * data.right.value / (data.right.value + data.left.value) - 1;
+        needle.setAttribute("transform", "rotate("+( level * 135 )+",64,64)");
+        write(0, data.left);
+        write(1, data.right);
+        total.innerHTML = +data.count;
+    };
+
+    io().on("data", update)
+</script>
