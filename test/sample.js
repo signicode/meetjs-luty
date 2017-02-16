@@ -18,11 +18,3 @@ const body = fs.readFileSync("input.txt")
 
 fs.writeFileSync(body.join("\n") + "\n" +
     "--- avg: " + body.sum / body.length);
-
-
-
-
-
-
-
-//emd

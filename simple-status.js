@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const TwitJet = require('../lib/twit-jet');
-const push = require("../lib/push-io");
-const LeftRightWindowStream = require('../lib/left-right-window');
-const MovingTimeWindowStream = require("../lib/window");
+const TwitJet = require('./lib/twit-jet');
+const push = require("./lib/push-io");
+const LeftRightWindowStream = require('./lib/left-right-window');
+const MovingTimeWindowStream = require("./lib/window");
 
 const options = require("yargs").argv;
 
@@ -15,7 +15,7 @@ if (options.lang) cfg.language =  options.lang;
 
 console.log("Crunching tweets for... ", cfg);
 
-new TwitJet(require('../../twitter-config.json'))
+new TwitJet(require('../twitter-config.json'))
     .statuses(cfg, 'tweet')
     .map(
         (tweet) => Object.assign({
