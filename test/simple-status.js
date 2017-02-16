@@ -17,9 +17,6 @@ console.log("Crunching tweets for... ", cfg);
 
 new TwitJet(require('../../twitter-config.json'))
     .statuses(cfg, 'tweet')
-    .each(
-        () => console.log('tweet')
-    )
     .map(
         (tweet) => Object.assign({
             text: options._.filter(
@@ -29,16 +26,18 @@ new TwitJet(require('../../twitter-config.json'))
     )
     .flatMap(
         (a) => {
-            const ret = [].concat(
-                a.text.map(a => a.text),
-                a.hashtags.map(a => '#' + a.text),
-                a.symbols.map(a => '$' + a.text),
-                a.user_mentions.map((mention) => '@'+mention.screen_name)
-            ).filter(a => a).map(
-                (a) => a.toLowerCase()
-            );
+            const ret = a.hashtags
+                .map(a => a.text)
+                .filter(a => a)
+                .map(a => a.toLowerCase());
             return ret;
         }
+    )
+    .filter(
+        a => !cfg.track || cfg.track.indexOf(a) === -1
+    )
+    .each(
+        a => console.log(a, !cfg.track, cfg.track.indexOf(a))
     )
     .pipe(
         new MovingTimeWindowStream({time: 300e3, WindowClass: LeftRightWindowStream})
